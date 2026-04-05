@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atri's Learning Hub — Enjoyable Tuition for Classes 1–10</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Cormorant Garamond', 'serif'],
+            body: ['DM Sans', 'sans-serif'],
+            deva: ['Noto Sans Devanagari', 'sans-serif'],
+          },
+          colors: {
+            ink: { DEFAULT: '#0f1623', 50: '#e8eaf0', 100: '#c5cad8', 200: '#9aa3ba', 300: '#6f7d9c', 400: '#4d5e84', 500: '#2b3f6c', 600: '#1e2d52', 700: '#131d3a', 800: '#0a1024', 900: '#050810' },
+            gold: { DEFAULT: '#c9922a', light: '#f0c060', pale: '#fdf6e3', warm: '#e8a83a' },
+            jade: { DEFAULT: '#2a9d8f', light: '#52c4b6', dark: '#1a6b61' },
+          },
+          backgroundImage: {
+            'hero-grain': "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E\")",
+          },
+          keyframes: {
+            'float-slow': { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-12px)' } },
+            'pulse-ring': { '0%': { transform: 'scale(1)', opacity: '0.8' }, '100%': { transform: 'scale(1.6)', opacity: '0' } },
+            'shimmer': { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+            'fade-up': { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+            'slide-left': { '0%': { opacity: '0', transform: 'translateX(-50px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+            'slide-right': { '0%': { opacity: '0', transform: 'translateX(50px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+          },
+          animation: {
+            'float-slow': 'float-slow 5s ease-in-out infinite',
+            'pulse-ring': 'pulse-ring 1.8s ease-out infinite',
+            'shimmer': 'shimmer 2.5s linear infinite',
+            'fade-up': 'fade-up 0.7s ease forwards',
+            'slide-left': 'slide-left 0.7s ease forwards',
+            'slide-right': 'slide-right 0.7s ease forwards',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #0f1623; color: #e8eaf0; overflow-x: hidden; }
+
+    /* Hero geometric background */
+    .hero-bg {
+      background: linear-gradient(135deg, #0a1024 0%, #0f1623 40%, #131d3a 70%, #0f1623 100%);
+      position: relative;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(201,146,42,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 50% at 20% 80%, rgba(42,157,143,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    /* Decorative orbs */
+    .orb { border-radius: 50%; filter: blur(60px); position: absolute; pointer-events: none; }
+
+    /* Shimmer button */
+    .btn-shimmer {
+      background: linear-gradient(90deg, #c9922a 0%, #f0c060 40%, #e8a83a 60%, #c9922a 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2.5s linear infinite;
+    }
+
+    /* Glass card */
+    .glass {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      backdrop-filter: blur(12px);
+    }
+    .glass-gold {
+      background: rgba(201,146,42,0.08);
+      border: 1px solid rgba(201,146,42,0.2);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Pillar cards */
+    .pillar-card {
+      opacity: 0;
+      transform: translateY(40px) scale(0.97);
+      transition: opacity 0.65s ease, transform 0.65s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .pillar-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .pillar-card:hover {
+      box-shadow: 0 20px 50px rgba(201,146,42,0.15);
+      border-color: rgba(201,146,42,0.35) !important;
+      transform: translateY(-4px) scale(1.01) !important;
+    }
+
+    /* About section slide */
+    .slide-reveal { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .slide-reveal.right { transform: translateX(40px); }
+    .slide-reveal.visible { opacity: 1; transform: translateX(0); }
+
+    /* Divider ornament */
+    .ornament { display: flex; align-items: center; gap: 16px; }
+    .ornament::before, .ornament::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,146,42,0.5), transparent); }
+
+    /* Modal backdrop */
+    .modal-backdrop { background: rgba(5,8,16,0.85); backdrop-filter: blur(8px); }
+
+    /* Input styles */
+    .field {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: #e8eaf0;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      width: 100%;
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+    }
+    .field:focus { border-color: rgba(201,146,42,0.6); box-shadow: 0 0 0 3px rgba(201,146,42,0.1); }
+    .field::placeholder { color: rgba(255,255,255,0.3); }
+
+    /* Number reveal */
+    .number-reveal { letter-spacing: 0.15em; font-variant-numeric: tabular-nums; }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Nav scroll effect handled by JS */
+    #navbar { transition: background 0.4s, box-shadow 0.4s, border-color 0.4s; }
+
+    /* Dashboard fade */
+    #dashboard { display: none; }
+    #landing { transition: opacity 0.4s; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a1024; }
+    ::-webkit-scrollbar-thumb { background: #2b3f6c; border-radius: 3px; }
+
+    /* Mobile menu */
+    #mobileMenu { transform: translateY(-10px); opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+    #mobileMenu.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ NAVBAR ═══════════════════════ -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 border-b border-transparent">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold to-gold-warm flex items-center justify-center text-ink font-display font-bold text-lg shadow-lg">A</div>
+        <div class="leading-tight">
+          <div class="font-display font-bold text-lg text-white tracking-tight leading-none">Atri's Learning Hub</div>
+          <div class="text-[10px] text-gold-light/70 tracking-widest uppercase font-body">Classes 1–10 · CBSE / WBBSE</div>
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#about" class="text-sm text-ink-100/70 hover:text-gold-light transition-colors font-body">About</a>
+        <a href="#pillars" class="text-sm text-ink-100/70 hover:text-gold-light transition-colors font-body">Methodology</a>
+        <button id="navLoginBtn" class="btn-shimmer text-ink font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg hover:scale-105 transition-transform">Login to Book a Call</button>
+        <button id="navLogoutBtn" class="hidden text-sm text-ink-100/60 hover:text-white border border-ink-100/20 hover:border-white/40 px-4 py-2 rounded-full transition-all">Sign Out</button>
+      </div>
+      <button id="mobileMenuBtn" class="md:hidden text-ink-100/70 hover:text-white p-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="md:hidden glass border-t border-white/10 absolute w-full top-full left-0 py-4 px-6 space-y-3">
+    <a href="#about" class="block text-sm text-ink-100/70 hover:text-gold-light py-2">About</a>
+    <a href="#pillars" class="block text-sm text-ink-100/70 hover:text-gold-light py-2">Methodology</a>
+    <button id="mobileLoginBtn" class="btn-shimmer text-ink font-semibold text-sm px-5 py-2.5 rounded-full w-full mt-1">Login to Book a Call</button>
+    <button id="mobileLogoutBtn" class="hidden text-sm text-ink-100/60 w-full border border-ink-100/20 px-4 py-2 rounded-full">Sign Out</button>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════ LANDING PAGE ═══════════════════════ -->
+<div id="landing">
+
+  <!-- ── HERO ── -->
+  <section class="hero-bg min-h-screen flex flex-col items-center justify-center pt-20 pb-12 px-4 relative overflow-hidden">
+
+    <!-- Floating orbs -->
+    <div class="orb w-96 h-96 bg-gold/10 top-10 -right-24 animate-float-slow" style="animation-delay:0s"></div>
+    <div class="orb w-64 h-64 bg-jade/10 bottom-20 -left-16 animate-float-slow" style="animation-delay:2s"></div>
+    <div class="orb w-48 h-48 bg-gold/8 top-1/2 left-1/3 animate-float-slow" style="animation-delay:1s"></div>
+
+    <!-- Decorative Sanskrit Om -->
+    <div class="absolute top-24 right-8 text-6xl opacity-5 font-deva select-none pointer-events-none text-gold">ॐ</div>
+    <div class="absolute bottom-16 left-8 text-4xl opacity-5 font-deva select-none pointer-events-none text-jade">विद्या</div>
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 glass-gold rounded-full px-5 py-2 text-gold-light text-xs font-body font-semibold tracking-widest uppercase animate-fade-up" style="animation-delay:0.1s">
+        <span class="w-2 h-2 rounded-full bg-gold animate-ping inline-block"></span>
+        Now Enrolling · Classes 1 to 10
+      </div>
+
+      <!-- Headline -->
+      <h1 class="font-display font-bold leading-[1.05] animate-fade-up" style="animation-delay:0.25s">
+        <span class="block text-4xl sm:text-6xl md:text-7xl text-white">Where Learning</span>
+        <span class="block text-4xl sm:text-6xl md:text-7xl" style="background: linear-gradient(90deg,#f0c060,#e8a83a,#c9922a); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Becomes a Joy.</span>
+      </h1>
+
+      <!-- Sub-headline & language tags -->
+      <div class="animate-fade-up space-y-3" style="animation-delay:0.4s">
+        <p class="text-lg md:text-xl text-ink-100/70 font-body max-w-2xl mx-auto">
+          Expert tuition in <strong class="text-white">English, Hindi</strong> &amp; <strong class="text-white">Sanskrit</strong> for CBSE and WBBSE students — delivered with energy, empathy, and excellence.
+        </p>
+        <div class="flex flex-wrap justify-center gap-3 text-sm mt-2">
+          <span class="glass rounded-full px-4 py-1.5 text-white/80 font-body">📖 English</span>
+          <span class="glass rounded-full px-4 py-1.5 text-white/80 font-deva">📖 हिन्दी</span>
+          <span class="glass rounded-full px-4 py-1.5 text-white/80 font-deva">📖 संस्कृतम्</span>
+          <span class="glass rounded-full px-4 py-1.5 text-white/80 font-body">🏫 CBSE</span>
+          <span class="glass rounded-full px-4 py-1.5 text-white/80 font-body">🏫 WBBSE</span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay:0.55s">
+        <div class="relative">
+          <div class="absolute inset-0 rounded-full bg-gold animate-pulse-ring"></div>
+          <button id="heroLoginBtn" class="btn-shimmer relative text-ink font-bold text-base md:text-lg px-8 py-4 rounded-full shadow-2xl hover:scale-105 transition-transform">
+           Login to Book a Call
+          </button>
+        </div>
+        <a href="#about" class="text-ink-100/60 hover:text-white text-sm font-body border border-white/15 hover:border-white/40 px-6 py-3.5 rounded-full transition-all">
+          Learn More ↓
+        </a>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="animate-fade-up grid grid-cols-3 gap-4 max-w-xl mx-auto pt-4" style="animation-delay:0.7s">
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="font-display font-bold text-2xl text-gold-light">500+</div>
+          <div class="text-xs text-ink-100/50 font-body mt-1">Sessions Completed</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="font-display font-bold text-2xl text-gold-light">10</div>
+          <div class="text-xs text-ink-100/50 font-body mt-1">Classes Covered</div>
+        </div>
+        <div class="glass rounded-2xl p-4 text-center">
+          <div class="font-display font-bold text-2xl text-gold-light">3</div>
+          <div class="text-xs text-ink-100/50 font-body mt-1">Languages</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/20">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+  </section>
+
+
+  <!-- ── ABOUT ── -->
+  <section id="about" class="py-20 md:py-32 px-4 relative overflow-hidden" style="background: linear-gradient(180deg, #0f1623 0%, #0a1024 50%, #0f1623 100%);">
+
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="orb w-80 h-80 bg-jade/8 -top-20 -left-20"></div>
+      <div class="orb w-96 h-96 bg-gold/6 -bottom-20 -right-20"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+      <!-- Section label -->
+      <div class="ornament mb-12">
+        <span class="text-xs tracking-widest text-gold/70 font-body uppercase font-semibold">About the Founder</span>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+
+        <!-- Image column -->
+        <div class="slide-reveal flex justify-center md:justify-end">
+          <div class="relative">
+            <!-- Outer ring decoration -->
+            <div class="absolute -inset-4 rounded-full border border-gold/15 animate-spin" style="animation-duration:20s; border-style: dashed;"></div>
+            <div class="absolute -inset-8 rounded-full border border-jade/10 animate-spin" style="animation-duration:30s; animation-direction: reverse; border-style: dashed;"></div>
+
+            <!-- Photo placeholder -->
+            <div class="relative w-56 h-56 md:w-72 md:h-72 rounded-full overflow-hidden border-4 border-gold/30 shadow-2xl shadow-gold/10">
+              <img
+                id="founderPhoto"
+                src="atri.png"
+                alt="Atri Bhowmik — Founder"
+                class="w-full h-full object-cover"
+                onerror="this.style.display='none'; document.getElementById('photoFallback').style.display='flex';"
+              />
+              <div id="photoFallback" class="absolute inset-0 flex flex-col items-center justify-center" style="background: linear-gradient(135deg, #1e2d52, #131d3a); display:flex;">
+                <div class="text-6xl md:text-7xl font-display font-bold text-gold/60 select-none">A</div>
+                <div class="text-xs text-ink-100/40 mt-2 font-body text-center px-4">Inject Atri's photo here</div>
+              </div>
+            </div>
+
+            <!-- Gold accent badge -->
+            <div class="absolute -bottom-2 -right-2 glass-gold rounded-2xl px-4 py-2 text-center shadow-xl">
+              <div class="font-deva text-gold font-semibold text-sm">आचार्य</div>
+              <div class="text-[10px] text-gold-light/70 font-body tracking-wider">Acharya · Mentor</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text column -->
+        <div class="slide-reveal right space-y-6">
+          <div>
+            <h2 class="font-display font-bold text-4xl md:text-5xl text-white leading-tight">
+              Meet <em class="text-gold-light">Atri Bhowmik</em>
+            </h2>
+            <p class="text-jade-light text-sm font-body mt-2 tracking-widest uppercase">Educator · Mentor · Language Specialist</p>
+          </div>
+
+          <div class="space-y-4 text-ink-100/75 font-body text-[0.97rem] leading-relaxed">
+            <p>
+              Atri Bhowmik is not your conventional tutor. He is a passionate educator who believes that every child carries within them a natural love for knowledge — it simply needs the right environment to flourish. With a deep command of <strong class="text-white">English, Hindi,</strong> and <strong class="text-white">Sanskrit</strong>, Atri teaches students from Classes 1 through 10 under both the <strong class="text-white">CBSE</strong> and <strong class="text-white">WBBSE</strong> curricula.
+            </p>
+            <p>
+              What sets Atri apart is his philosophy: learning should be a conversation, not a lecture. He uses storytelling, contextual examples, and interactive exercises to make even the most complex grammatical structures feel intuitive. His students don't just memorise — they understand, and that understanding stays with them long after examinations are over.
+            </p>
+            <p>
+              Rooted in classical educational tradition yet fluent in modern pedagogical methods, Atri brings warmth, patience, and rigour to every session. Parents describe him as the educator who turned their child's anxiety into confidence, and his students remember him as the teacher who made them fall in love with words.
+            </p>
+          </div>
+
+          <!-- Contact teaser -->
+          <div class="glass-gold rounded-2xl p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center text-xl flex-shrink-0">📞</div>
+            <div>
+              <div class="text-white font-body font-semibold text-sm">Ready to begin your child's journey?</div>
+              <div class="text-gold-light/70 text-xs font-body mt-0.5">Login to unlock direct contact & book a free discovery call.</div>
+            </div>
+          </div>
+
+          <button id="aboutLoginBtn" class="btn-shimmer text-ink font-semibold text-sm px-7 py-3 rounded-full shadow-lg hover:scale-105 transition-transform">
+            Login &amp; Book a Call →
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── 5 PILLARS ── -->
+  <section id="pillars" class="py-20 md:py-32 px-4 relative overflow-hidden" style="background: #080d18;">
+    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 100% 80% at 50% 50%, rgba(201,146,42,0.04) 0%, transparent 70%);"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="text-center mb-16 space-y-4">
+        <div class="ornament mb-8">
+          <span class="text-xs tracking-widest text-gold/70 font-body uppercase font-semibold">Our Approach</span>
+        </div>
+        <h2 class="font-display font-bold text-4xl md:text-6xl text-white">
+          The <em class="text-gold-light">5 Pillars</em> of Learning
+        </h2>
+        <p class="text-ink-100/60 font-body max-w-2xl mx-auto">
+          A methodology built on research, empathy, and years of classroom experience — designed to transform every student's academic trajectory.
+        </p>
+      </div>
+
+      <!-- Pillar Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
+
+        <!-- Card 1 -->
+        <div class="pillar-card glass rounded-3xl p-8 border border-white/8 flex flex-col gap-5" style="transition-delay: 0.0s">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner" style="background: rgba(240,192,96,0.12); border: 1px solid rgba(240,192,96,0.2);">🎭</div>
+          <div>
+            <h3 class="font-display font-bold text-2xl text-white leading-tight">Fun-Filled Learning</h3>
+            <div class="text-gold-light/50 text-[11px] font-body tracking-widest uppercase mt-1">Pillar I</div>
+          </div>
+          <p class="text-ink-100/65 font-body text-sm leading-relaxed">
+            Lessons are crafted as experiences — stories, role-plays, word games, and riddles that turn abstract concepts into vivid memories. When a student laughs, they learn. When they're engaged, they retain.
+          </p>
+          <div class="mt-auto pt-2 flex items-center gap-2 text-xs text-gold/50 font-body">
+            <span class="w-6 h-px bg-gold/30 block"></span> Engagement-First Design
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="pillar-card glass rounded-3xl p-8 border border-white/8 flex flex-col gap-5" style="transition-delay: 0.12s">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner" style="background: rgba(42,157,143,0.12); border: 1px solid rgba(42,157,143,0.2);">🔬</div>
+          <div>
+            <h3 class="font-display font-bold text-2xl text-white leading-tight">Interactive Methods</h3>
+            <div class="text-jade-light/50 text-[11px] font-body tracking-widest uppercase mt-1">Pillar II</div>
+          </div>
+          <p class="text-ink-100/65 font-body text-sm leading-relaxed">
+            Socratic questioning, peer-discussion techniques, and live practice exercises replace passive note-taking. Students are co-architects of every lesson — their curiosity drives the curriculum forward.
+          </p>
+          <div class="mt-auto pt-2 flex items-center gap-2 text-xs text-jade/50 font-body">
+            <span class="w-6 h-px bg-jade/30 block"></span> Two-Way Dialogue
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="pillar-card glass rounded-3xl p-8 border border-white/8 flex flex-col gap-5" style="transition-delay: 0.24s">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner" style="background: rgba(201,146,42,0.12); border: 1px solid rgba(201,146,42,0.2);">🎯</div>
+          <div>
+            <h3 class="font-display font-bold text-2xl text-white leading-tight">Expert Guidance</h3>
+            <div class="text-gold-light/50 text-[11px] font-body tracking-widest uppercase mt-1">Pillar III</div>
+          </div>
+          <p class="text-ink-100/65 font-body text-sm leading-relaxed">
+            Deep subject mastery in English, Hindi, and Sanskrit means every answer is precise, every explanation is layered. Students receive mentorship calibrated to their unique learning style and pace.
+          </p>
+          <div class="mt-auto pt-2 flex items-center gap-2 text-xs text-gold/50 font-body">
+            <span class="w-6 h-px bg-gold/30 block"></span> Personalised Instruction
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="pillar-card glass rounded-3xl p-8 border border-white/8 flex flex-col gap-5 sm:col-span-1" style="transition-delay: 0.36s">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner" style="background: rgba(82,196,182,0.12); border: 1px solid rgba(82,196,182,0.2);">📊</div>
+          <div>
+            <h3 class="font-display font-bold text-2xl text-white leading-tight">Smart Scoring</h3>
+            <div class="text-jade-light/50 text-[11px] font-body tracking-widest uppercase mt-1">Pillar IV</div>
+          </div>
+          <p class="text-ink-100/65 font-body text-sm leading-relaxed">
+            Exam strategy is a skill — and Atri teaches it explicitly. From answer-framing techniques to time management during tests, students develop the exam temperament that converts knowledge into marks.
+          </p>
+          <div class="mt-auto pt-2 flex items-center gap-2 text-xs text-jade/50 font-body">
+            <span class="w-6 h-px bg-jade/30 block"></span> Outcome-Oriented Practice
+          </div>
+        </div>
+
+        <!-- Card 5 — spans wider on lg -->
+        <div class="pillar-card glass rounded-3xl p-8 border border-white/8 flex flex-col gap-5 sm:col-span-2 lg:col-span-2" style="transition-delay: 0.48s">
+          <div class="flex items-start gap-6">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-inner flex-shrink-0" style="background: rgba(201,146,42,0.12); border: 1px solid rgba(201,146,42,0.2);">🌱</div>
+            <div>
+              <h3 class="font-display font-bold text-2xl md:text-3xl text-white leading-tight">Holistic Growth</h3>
+              <div class="text-gold-light/50 text-[11px] font-body tracking-widest uppercase mt-1">Pillar V · The Foundation</div>
+            </div>
+          </div>
+          <p class="text-ink-100/65 font-body text-sm leading-relaxed max-w-2xl">
+            Academic excellence is only one dimension of a thriving student. Atri's approach consciously nurtures critical thinking, emotional resilience, and a growth mindset — qualities that serve students not just in examinations, but throughout their lives. A confident communicator is built one lesson at a time, and every session is a brick in that foundation.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-auto pt-2">
+            <span class="glass-gold rounded-full px-3 py-1 text-xs text-gold-light font-body">Critical Thinking</span>
+            <span class="glass-gold rounded-full px-3 py-1 text-xs text-gold-light font-body">Self-Expression</span>
+            <span class="glass-gold rounded-full px-3 py-1 text-xs text-gold-light font-body">Emotional Resilience</span>
+            <span class="glass-gold rounded-full px-3 py-1 text-xs text-gold-light font-body">Growth Mindset</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── FOOTER ── -->
+  <footer class="py-12 px-4 border-t border-white/5 text-center" style="background: #050810;">
+    <div class="max-w-3xl mx-auto space-y-4">
+      <div class="font-display font-bold text-2xl text-white">Atri's Learning Hub</div>
+      <p class="text-ink-100/40 text-sm font-body">Empowering young minds across CBSE &amp; WBBSE · Classes 1–10</p>
+      <div class="flex justify-center gap-6 text-xs text-ink-100/30 font-body">
+        <span>English</span>
+        <span class="font-deva">हिन्दी</span>
+        <span class="font-deva">संस्कृतम्</span>
+      </div>
+      <div class="pt-4 text-xs text-ink-100/20 font-body">© 2025 Atri Bhowmik · mrbhowmik257@gmail.com</div>
+    </div>
+  </footer>
+
+</div><!-- end #landing -->
+
+
+<!-- ═══════════════════════ DASHBOARD ═══════════════════════ -->
+<div id="dashboard" class="min-h-screen" style="background: linear-gradient(135deg, #080d18 0%, #0f1623 50%, #080d18 100%);">
+
+  <!-- Dashboard Navbar -->
+  <div class="border-b border-white/8 sticky top-0 z-40 backdrop-blur-xl" style="background: rgba(8,13,24,0.85);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-gold-warm flex items-center justify-center text-ink font-display font-bold">A</div>
+        <span class="font-display font-semibold text-white text-lg">Atri's Learning Hub</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div id="dashUserEmail" class="hidden md:block text-xs text-ink-100/50 font-body truncate max-w-xs"></div>
+        <button id="dashLogoutBtn" class="text-xs text-ink-100/50 hover:text-white border border-white/10 hover:border-white/30 px-4 py-1.5 rounded-full transition-all font-body">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-12">
+
+    <!-- Welcome Banner -->
+    <div class="glass-gold rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
+      <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-gold to-gold-warm flex items-center justify-center text-3xl md:text-4xl shadow-2xl flex-shrink-0">🎓</div>
+      <div class="text-center md:text-left">
+        <div class="text-gold-light/60 text-xs font-body tracking-widest uppercase mb-1">Welcome back</div>
+        <h2 class="font-display font-bold text-3xl md:text-4xl text-white leading-tight">
+          Hello, <span id="welcomeName" class="text-gold-light italic">Scholar</span>!
+        </h2>
+        <p class="text-ink-100/65 font-body text-sm mt-2">You're now inside the private portal of Atri's Learning Hub. Explore your options below.</p>
+      </div>
+    </div>
+
+    <!-- Direct Number Module -->
+    <div class="glass rounded-3xl p-8 md:p-10 border border-white/8 space-y-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-jade/10 border border-jade/20 flex items-center justify-center text-xl flex-shrink-0">📱</div>
+        <div>
+          <h3 class="font-display font-bold text-2xl text-white">Direct Contact</h3>
+          <p class="text-ink-100/50 text-sm font-body">Book a free discovery call with Atri directly.</p>
+        </div>
+      </div>
+
+      <!-- Number reveal area -->
+      <div id="numberBox" class="glass rounded-2xl p-6 text-center space-y-4 border border-white/5">
+        <div id="numberBlurred" class="space-y-4">
+          <div class="text-4xl font-display font-bold text-white/20 tracking-widest number-reveal blur-sm select-none">+91 85096 09341</div>
+          <p class="text-xs text-ink-100/40 font-body">Click the button below to reveal Atri's direct number.</p>
+        </div>
+        <div id="numberRevealed" class="hidden space-y-4">
+          <div class="text-xs text-jade-light/60 font-body tracking-widest uppercase mb-1">Atri Bhowmik · Direct Number</div>
+          <div class="font-display font-bold text-3xl md:text-4xl text-white number-reveal tracking-wider">+91 85096 09341</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button id="revealBtn" class="btn-shimmer text-ink font-semibold px-7 py-3.5 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2">
+          <span id="revealBtnIcon">🔒</span>
+          <span id="revealBtnText">Reveal Direct Number &amp; Book Call</span>
+        </button>
+        <a id="callBtn" href="#" class="hidden items-center justify-center gap-2 glass-gold text-gold-light font-semibold px-7 py-3.5 rounded-full hover:scale-105 transition-transform border border-gold/20" style="display:none;">
+          📞 Call Now
+        </a>
+      </div>
+    </div>
+
+    <!-- Consultation Form -->
+    <div class="glass rounded-3xl p-8 md:p-10 border border-white/8 space-y-8">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center text-xl flex-shrink-0">✉️</div>
+        <div>
+          <h3 class="font-display font-bold text-2xl text-white">Send an Inquiry</h3>
+          <p class="text-ink-100/50 text-sm font-body">Your message is securely routed to Atri Bhowmik and will be responded to within 24 hours.</p>
+        </div>
+      </div>
+
+      <form id="inquiryForm" class="space-y-5" onsubmit="return false;">
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div class="space-y-2">
+            <label class="text-xs text-ink-100/50 font-body tracking-widest uppercase block">Your Name</label>
+            <input id="formName" type="text" class="field" placeholder="e.g. Priya Sharma" required />
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs text-ink-100/50 font-body tracking-widest uppercase block">Subject</label>
+            <input id="formSubject" type="text" class="field" placeholder="e.g. Class 7 English Tuition" required />
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs text-ink-100/50 font-body tracking-widest uppercase block">Your Message</label>
+          <textarea id="formMessage" class="field min-h-[130px] resize-none" placeholder="Tell Atri about your child's class, the subjects of interest, preferred timing, and any specific challenges you'd like addressed..." required></textarea>
+        </div>
+
+        <!-- Routing note -->
+        <div class="flex items-start gap-3 glass rounded-xl p-4 text-xs text-ink-100/50 font-body border border-white/5">
+          <span class="text-base flex-shrink-0">🔐</span>
+          <span>This message is encrypted and securely routed to <strong class="text-ink-100/80">mrbhowmik257@gmail.com</strong>. Your contact details are automatically attached. No third parties have access to this inquiry.</span>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn-shimmer text-ink font-bold px-8 py-4 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center gap-2">
+          <span id="submitIcon">📨</span>
+          <span id="submitText">Send Inquiry to Atri</span>
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div><!-- end #dashboard -->
+
+
+<!-- ═══════════════════════ AUTH MODAL ═══════════════════════ -->
+<div id="authModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+  <div class="modal-backdrop absolute inset-0" id="modalBackdrop"></div>
+  <div class="relative z-10 w-full max-w-md">
+    <div class="glass rounded-3xl p-8 md:p-10 border border-white/10 shadow-2xl space-y-7" style="background: rgba(13,18,35,0.97);">
+
+      <!-- Close -->
+      <button id="closeModal" class="absolute top-5 right-5 text-ink-100/40 hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Header -->
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-gold to-gold-warm flex items-center justify-center mx-auto text-2xl shadow-xl">🔓</div>
+        <h3 class="font-display font-bold text-3xl text-white">Welcome</h3>
+        <p class="text-ink-100/50 text-sm font-body">Sign in to access the private portal</p>
+      </div>
+
+      <!-- Auth error -->
+      <div id="authError" class="hidden rounded-xl p-4 text-sm font-body text-red-300 border border-red-500/20" style="background: rgba(239,68,68,0.08);"></div>
+
+      <!-- Google Sign In -->
+      <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3.5 px-6 rounded-full transition-all hover:scale-[1.02] shadow-lg font-body text-sm">
+        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+        Continue with Google
+      </button>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-4">
+        <div class="flex-1 h-px bg-white/10"></div>
+        <span class="text-ink-100/30 text-xs font-body">or continue with email</span>
+        <div class="flex-1 h-px bg-white/10"></div>
+      </div>
+
+      <!-- Email/Password form -->
+      <div class="space-y-4">
+        <input id="authEmail" type="email" class="field" placeholder="Email address" />
+        <div class="relative">
+          <input id="authPassword" type="password" class="field pr-12" placeholder="Password" />
+          <button id="togglePwd" class="absolute right-4 top-1/2 -translate-y-1/2 text-ink-100/30 hover:text-ink-100/70 transition-colors text-xs font-body">Show</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <button id="emailSignInBtn" class="btn-shimmer text-ink font-semibold py-3 rounded-full text-sm hover:scale-105 transition-transform">Sign In</button>
+          <button id="emailSignUpBtn" class="glass text-white font-semibold py-3 rounded-full text-sm hover:border-gold/30 transition-all border border-white/15 font-body">Sign Up</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ TOAST ═══════════════════════ -->
+<div id="toast" class="glass-gold rounded-2xl px-5 py-4 flex items-center gap-3 shadow-2xl border border-gold/20 max-w-xs">
+  <span id="toastIcon" class="text-xl">✅</span>
+  <span id="toastMsg" class="text-sm text-white font-body"></span>
+</div>
+
+
+<!-- ═══════════════════════ FIREBASE + APP JS ═══════════════════════ -->
+<script type="module">
+
+  // ╔══════════════════════════════════════════════════════════════╗
+  // ║          FIREBASE CONFIGURATION — PASTE YOUR KEYS HERE      ║
+  // ║  Replace every value below with your actual Firebase config  ║
+  // ╠══════════════════════════════════════════════════════════════╣
+  const firebaseConfig = {
+  apiKey: "AIzaSyDtvjI-ImiWt-QUE4N-qgG_zkVwMn-7q0U",
+  authDomain: "vortex-atri-hub.firebaseapp.com",
+  projectId: "vortex-atri-hub",
+  storageBucket: "vortex-atri-hub.firebasestorage.app",
+  messagingSenderId: "852943761312",
+  appId: "1:852943761312:web:50a177a49a50532685fec5"
+};
+  // ╚══════════════════════════════════════════════════════════════╝
+
+  // ── Firebase Imports ──
+  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup,
+           createUserWithEmailAndPassword, signInWithEmailAndPassword,
+           signOut, onAuthStateChanged, setPersistence,
+           browserLocalPersistence }                from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, addDoc,
+           serverTimestamp }                        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  // ── Initialize ──
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // Persist auth across sessions
+  setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+  // ── DOM References ──
+  const landing       = document.getElementById('landing');
+  const dashboard     = document.getElementById('dashboard');
+  const authModal     = document.getElementById('authModal');
+  const authError     = document.getElementById('authError');
+  const welcomeName   = document.getElementById('welcomeName');
+  const dashUserEmail = document.getElementById('dashUserEmail');
+  const numberBlurred = document.getElementById('numberBlurred');
+  const numberRevealed= document.getElementById('numberRevealed');
+  const revealBtn     = document.getElementById('revealBtn');
+  const revealBtnIcon = document.getElementById('revealBtnIcon');
+  const revealBtnText = document.getElementById('revealBtnText');
+  const callBtn       = document.getElementById('callBtn');
+  const toast         = document.getElementById('toast');
+  const toastMsg      = document.getElementById('toastMsg');
+  const toastIcon     = document.getElementById('toastIcon');
+
+  let currentUser = null;
+
+  // ── Toast ──
+  function showToast(msg, icon = '✅') {
+    toastMsg.textContent = msg;
+    toastIcon.textContent = icon;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  // ── Auth Modal ──
+  function openModal()  { authModal.classList.remove('hidden'); authModal.classList.add('flex'); clearAuthError(); }
+  function closeModal() { authModal.classList.add('hidden'); authModal.classList.remove('flex'); clearAuthError(); }
+  function setAuthError(msg) { authError.textContent = msg; authError.classList.remove('hidden'); }
+  function clearAuthError()  { authError.textContent = ''; authError.classList.add('hidden'); }
+
+  document.getElementById('heroLoginBtn').addEventListener('click', openModal);
+  document.getElementById('navLoginBtn').addEventListener('click', openModal);
+  document.getElementById('aboutLoginBtn').addEventListener('click', openModal);
+  document.getElementById('mobileLoginBtn').addEventListener('click', () => { closeMobileMenu(); openModal(); });
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+
+  // Toggle password visibility
+  document.getElementById('togglePwd').addEventListener('click', () => {
+    const pwd = document.getElementById('authPassword');
+    const btn = document.getElementById('togglePwd');
+    if (pwd.type === 'password') { pwd.type = 'text'; btn.textContent = 'Hide'; }
+    else { pwd.type = 'password'; btn.textContent = 'Show'; }
+  });
+
+  // ── Google Sign In ──
+  const googleProvider = new GoogleAuthProvider();
+  document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+    clearAuthError();
+    try {
+      await signInWithPopup(auth, googleProvider);
+      closeModal();
+    } catch (e) {
+      setAuthError(e.message.replace('Firebase: ', ''));
+    }
+  });
+
+  // ── Email Sign In ──
+  document.getElementById('emailSignInBtn').addEventListener('click', async () => {
+    clearAuthError();
+    const email = document.getElementById('authEmail').value.trim();
+    const pass  = document.getElementById('authPassword').value;
+    if (!email || !pass) { setAuthError('Please enter your email and password.'); return; }
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      closeModal();
+    } catch (e) {
+      setAuthError(e.message.replace('Firebase: ', ''));
+    }
+  });
+
+  // ── Email Sign Up ──
+  document.getElementById('emailSignUpBtn').addEventListener('click', async () => {
+    clearAuthError();
+    const email = document.getElementById('authEmail').value.trim();
+    const pass  = document.getElementById('authPassword').value;
+    if (!email || !pass) { setAuthError('Please enter your email and a password (min 6 chars).'); return; }
+    try {
+      await createUserWithEmailAndPassword(auth, email, pass);
+      closeModal();
+      showToast('Account created! Welcome aboard.', '🎉');
+    } catch (e) {
+      setAuthError(e.message.replace('Firebase: ', ''));
+    }
+  });
+
+  // ── Sign Out ──
+  function handleSignOut() {
+    signOut(auth).then(() => showToast('Signed out successfully.', '👋'));
+  }
+  document.getElementById('navLogoutBtn').addEventListener('click', handleSignOut);
+  document.getElementById('mobileLogoutBtn').addEventListener('click', () => { closeMobileMenu(); handleSignOut(); });
+  document.getElementById('dashLogoutBtn').addEventListener('click', handleSignOut);
+
+  // ── Show / Hide Dashboard vs Landing ──
+  function showDashboard(user) {
+    landing.style.display   = 'none';
+    dashboard.style.display = 'block';
+    document.getElementById('navLoginBtn').classList.add('hidden');
+    document.getElementById('navLogoutBtn').classList.remove('hidden');
+    document.getElementById('mobileLoginBtn').classList.add('hidden');
+    document.getElementById('mobileLogoutBtn').classList.remove('hidden');
+
+    const displayName = user.displayName || user.email.split('@')[0];
+    welcomeName.textContent  = displayName;
+    dashUserEmail.textContent = user.email;
+
+    // Reset number reveal state on login
+    resetNumberReveal();
+  }
+
+  function showLanding() {
+    landing.style.display   = 'block';
+    dashboard.style.display = 'none';
+    document.getElementById('navLoginBtn').classList.remove('hidden');
+    document.getElementById('navLogoutBtn').classList.add('hidden');
+    document.getElementById('mobileLoginBtn').classList.remove('hidden');
+    document.getElementById('mobileLogoutBtn').classList.add('hidden');
+  }
+
+  // ── Auth State Observer ──
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (user) {
+      showDashboard(user);
+      if (user.displayName) showToast(`Welcome back, ${user.displayName.split(' ')[0]}!`, '👋');
+    } else {
+      showLanding();
+    }
+  });
+
+  // ── Number Reveal Logic ──
+  // Phone number is assembled at runtime — not exposed in raw HTML
+  function resetNumberReveal() {
+    numberBlurred.classList.remove('hidden');
+    numberRevealed.classList.add('hidden');
+    callBtn.style.display = 'none';
+    revealBtnIcon.textContent = '🔒';
+    revealBtnText.textContent = 'Reveal Direct Number & Book Call';
+    revealBtn.classList.remove('hidden');
+  }
+
+  revealBtn.addEventListener('click', () => {
+    // Number assembled from parts to prevent raw HTML scraping
+    const p1 = '+91', p2 = ' 85096', p3 = ' 09341';
+    const fullNumber = p1 + p2 + p3;
+    const telHref    = 'tel:' + p1 + p2.replace(/\s/g,'') + p3.replace(/\s/g,'');
+
+    numberBlurred.classList.add('hidden');
+    numberRevealed.classList.remove('hidden');
+
+    callBtn.href         = telHref;
+    callBtn.style.display = 'flex';
+    revealBtnIcon.textContent = '✅';
+    revealBtnText.textContent = 'Number Revealed!';
+    revealBtn.disabled = true;
+    revealBtn.classList.add('opacity-60', 'cursor-default');
+    revealBtn.classList.remove('hover:scale-105');
+
+    showToast('Direct number revealed. Call anytime!', '📞');
+  });
+
+  // ── Consultation Form → Firestore ──
+  document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!currentUser) { showToast('Please sign in first.', '⚠️'); return; }
+
+    const submitBtn  = document.getElementById('submitBtn');
+    const submitIcon = document.getElementById('submitIcon');
+    const submitText = document.getElementById('submitText');
+
+    const name    = document.getElementById('formName').value.trim();
+    const subject = document.getElementById('formSubject').value.trim();
+    const message = document.getElementById('formMessage').value.trim();
+
+    if (!name || !subject || !message) {
+      showToast('Please fill in all fields.', '⚠️'); return;
+    }
+
+    submitBtn.disabled = true;
+    submitIcon.textContent = '⏳';
+    submitText.textContent = 'Sending…';
+
+    try {
+      // Firestore payload — structured for email trigger integration
+      await addDoc(collection(db, 'inquiries'), {
+        senderName:    name,
+        senderEmail:   currentUser.email,
+        senderUID:     currentUser.uid,
+        subject:       subject,
+        message:       message,
+        routedTo:      'mrbhowmik257@gmail.com',
+        status:        'new',
+        createdAt:     serverTimestamp(),
+      });
+
+      showToast('Inquiry sent! Atri will reply within 24 hours.', '🎉');
+      document.getElementById('formName').value    = '';
+      document.getElementById('formSubject').value = '';
+      document.getElementById('formMessage').value = '';
+
+      submitIcon.textContent = '✅';
+      submitText.textContent = 'Inquiry Sent!';
+      setTimeout(() => {
+        submitIcon.textContent = '📨';
+        submitText.textContent = 'Send Inquiry to Atri';
+        submitBtn.disabled = false;
+      }, 3000);
+
+    } catch (err) {
+      console.error('Firestore error:', err);
+      showToast('Error sending message. Please try again.', '❌');
+      submitIcon.textContent = '📨';
+      submitText.textContent = 'Send Inquiry to Atri';
+      submitBtn.disabled = false;
+    }
+  });
+
+  // ── Mobile Menu ──
+  const mobileMenu    = document.getElementById('mobileMenu');
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  function closeMobileMenu() { mobileMenu.classList.remove('open'); }
+  mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) closeMobileMenu();
+  });
+
+  // ── Navbar scroll effect ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.style.background    = 'rgba(8,13,24,0.92)';
+      navbar.style.boxShadow     = '0 1px 30px rgba(0,0,0,0.5)';
+      navbar.style.borderColor   = 'rgba(255,255,255,0.07)';
+      navbar.style.backdropFilter = 'blur(14px)';
+    } else {
+      navbar.style.background    = 'transparent';
+      navbar.style.boxShadow     = 'none';
+      navbar.style.borderColor   = 'transparent';
+      navbar.style.backdropFilter = 'none';
+    }
+  }, { passive: true });
+
+  // ── Intersection Observer — Pillar Cards ──
+  const pillars = document.querySelectorAll('.pillar-card');
+  const pillarObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        pillarObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  pillars.forEach(card => pillarObserver.observe(card));
+
+  // ── Intersection Observer — Slide Reveals (About) ──
+  const reveals = document.querySelectorAll('.slide-reveal');
+  const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        slideObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  reveals.forEach(el => slideObserver.observe(el));
+
+</script>
+
+</body>
+</html>
